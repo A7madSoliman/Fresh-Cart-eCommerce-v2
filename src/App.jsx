@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 import Layout from "./Components/Layout/Layout";
 import Home from "./Pages/Home/Home";
 import Login from "./Pages/Login/Login";
@@ -23,7 +23,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import LoadingProvider from "./Components/Context/Loading.context";
 
 function App() {
-  const routes = createBrowserRouter([
+  const routes = createHashRouter([
     {
       path: "/",
       element: (
