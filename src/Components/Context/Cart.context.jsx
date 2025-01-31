@@ -90,6 +90,7 @@ export default function CartProvider({ children }) {
   }
 
   async function updateCartProductQuantity({ id, count }) {
+    setIsCartLoading(true);
     try {
       const options = {
         url: `https://ecommerce.routemisr.com/api/v1/cart/${id}`,
@@ -105,6 +106,8 @@ export default function CartProvider({ children }) {
       setCartInfo(data);
     } catch (error) {
       console.error("Error removing product from cart", error);
+    } finally {
+      setIsCartLoading(false);
     }
   }
 

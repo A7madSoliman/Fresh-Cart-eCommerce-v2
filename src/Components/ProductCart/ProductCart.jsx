@@ -3,15 +3,33 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddShoppingCartOutlinedIcon from "@mui/icons-material/AddShoppingCartOutlined";
 import { Link } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { cartContext } from "../Context/Cart.context";
 import { wishContext } from "../Context/Wishlist.context";
 import { Helmet } from "react-helmet";
 import CircularProgress from "@mui/material/CircularProgress";
 
 export default function ProductCart({ product }) {
-  const { addProductToCart, isCartLoading } = useContext(cartContext);
+  const { addProductToCart } = useContext(cartContext);
   const { addProductToWishlist } = useContext(wishContext);
+  const [loadingProductId, setLoadingProductId] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const handleAddToCart = async (productId) => {
+    setLoadingProductId(productId);
+    await addProductToCart({ id: productId });
+    setLoadingProductId(null);
+  };
+
+  const handleAddToWishList = async (productId) => {
+    setIsFavorite((prev) => !prev);
+    try {
+      await addProductToWishlist({ id: productId });
+    } catch (error) {
+      console.error("Error adding product to wishlist:", error);
+      setIsFavorite((prev) => !prev);
+    }
+  };
 
   return (
     <>
@@ -62,17 +80,17 @@ export default function ProductCart({ product }) {
           </span>
         </div>
 
-        <p className="text-xs mt-2 mb-2 text-center text-gray-600 line-clamp-2">
+        <p className="text-xs mt-2 mb-2 text-center text-gray-600 line-clamp-1">
           {product.description}
         </p>
 
         <div className="flex items-center justify-center gap-2 mb-3">
           <button
-            onClick={() => addProductToCart({ id: product.id })}
-            disabled={isCartLoading}
+            onClick={() => handleAddToCart(product.id)}
+            disabled={loadingProductId === product.id}
             className="px-2 py-2 font-semibold text-sm rounded-lg bg-gray-300 hover:bg-primary hover:text-white transition-colors duration-200 "
           >
-            {isCartLoading ? (
+            {loadingProductId === product.id ? (
               <CircularProgress size={"19px"} />
             ) : (
               <AddShoppingCartOutlinedIcon />
@@ -86,11 +104,14 @@ export default function ProductCart({ product }) {
             <VisibilityIcon fontSize="medium" />
           </Link>
           <button
-            onClick={() => addProductToWishlist({ id: product.id })}
+            onClick={() => handleAddToWishList(product.id)}
             className="p-2 font-semibold text-sm bg-gray-300 rounded-lg hover:text-red-500"
             aria-label="Favorite"
           >
-            <FavoriteIcon fontSize="medium" />
+            <FavoriteIcon
+              fontSize="medium"
+              className={isFavorite ? "text-red-500" : ""}
+            />
           </button>
         </div>
       </div>{" "}

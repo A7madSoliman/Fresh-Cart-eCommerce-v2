@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { Link } from "react-router-dom";
@@ -7,8 +7,7 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Helmet } from "react-helmet";
-import { loadingContext } from "../../Components/Context/Loading.context";
-import Loading from "../../Components/Loading/Loading";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function ShoppingCart() {
   const {
@@ -16,14 +15,30 @@ export default function ShoppingCart() {
     removeProductFromCart,
     updateCartProductQuantity,
     clearUserCart,
+    isCartLoading,
   } = useContext(cartContext);
-  const { isLoading } = useContext(loadingContext);
 
   const isCartEmpty = cartInfo.length === 0;
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  const handleIncreaseQuantity = (product) => {
+    const newQuantity = product.count + 1;
+    updateCartProductQuantity({
+      id: product.product.id,
+      count: newQuantity,
+    });
+  };
+
+  const handleDecreaseQuantity = (product) => {
+    const newQuantity = product.count - 1;
+    if (newQuantity > 0) {
+      updateCartProductQuantity({
+        id: product.product.id,
+        count: newQuantity,
+      });
+    } else {
+      removeProductFromCart({ id: product.product.id });
+    }
+  };
 
   return (
     <>
@@ -73,27 +88,25 @@ export default function ShoppingCart() {
                   </h4>
 
                   <div className="flex items-center gap-4">
-                    <RemoveCircleOutlineIcon
-                      onClick={() => {
-                        updateCartProductQuantity({
-                          id: product.product.id,
-                          count: product.count - 1,
-                        });
-                      }}
-                      className="hover:text-primary cursor-pointer"
-                      fontSize="medium"
-                    />
+                    {isCartLoading ? (
+                      <CircularProgress size={"19px"} />
+                    ) : (
+                      <RemoveCircleOutlineIcon
+                        onClick={() => handleDecreaseQuantity(product)}
+                        className="hover:text-primary cursor-pointer"
+                        fontSize="medium"
+                      />
+                    )}
                     <span className="font-bold text-xl">{product.count}</span>
-                    <AddCircleOutlineIcon
-                      onClick={() => {
-                        updateCartProductQuantity({
-                          id: product.product.id,
-                          count: product.count + 1,
-                        });
-                      }}
-                      className="hover:text-primary cursor-pointer"
-                      fontSize="medium"
-                    />
+                    {isCartLoading ? (
+                      <CircularProgress size={"19px"} />
+                    ) : (
+                      <AddCircleOutlineIcon
+                        onClick={() => handleIncreaseQuantity(product)}
+                        className="hover:text-primary cursor-pointer"
+                        fontSize="medium"
+                      />
+                    )}
                   </div>
                   <div>
                     <button

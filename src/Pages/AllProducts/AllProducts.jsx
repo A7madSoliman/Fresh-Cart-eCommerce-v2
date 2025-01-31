@@ -7,7 +7,6 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AddShoppingCartOutlinedIcon from "@mui/icons-material/AddShoppingCartOutlined";
 import CircularProgress from "@mui/material/CircularProgress";
-
 import { Link } from "react-router-dom";
 import Loading from "../../Components/Loading/Loading";
 import { Helmet } from "react-helmet";
@@ -17,11 +16,25 @@ export default function AllProducts() {
   const { addProductToWishlist } = useContext(wishContext);
   const { data, error, isLoading: productsLoading } = useProducts();
   const [loadingProductId, setLoadingProductId] = useState(null);
+  const [favoriteProducts, setFavoriteProducts] = useState([]);
 
   const handleAddToCart = async (productId) => {
     setLoadingProductId(productId);
     await addProductToCart({ id: productId });
     setLoadingProductId(null);
+  };
+
+  const handleAddToWishList = async (productId) => {
+    if (favoriteProducts.includes(productId)) {
+      setFavoriteProducts((prev) => prev.filter((id) => id !== productId));
+    } else {
+      setFavoriteProducts((prev) => [...prev, productId]);
+    }
+    try {
+      await addProductToWishlist({ id: productId });
+    } catch (error) {
+      console.error("Error adding product to wishlist:", error);
+    }
   };
 
   if (productsLoading) return <Loading />;
@@ -95,11 +108,18 @@ export default function AllProducts() {
                 <VisibilityIcon fontSize="medium" />
               </Link>
               <button
-                onClick={() => addProductToWishlist({ id: product.id })}
+                onClick={() => handleAddToWishList(product.id)}
                 className="p-2 font-semibold text-sm bg-gray-300 rounded-lg hover:text-red-500"
                 aria-label={`Add ${product.title} to wishlist`}
               >
-                <FavoriteIcon fontSize="medium" />
+                <FavoriteIcon
+                  fontSize="medium"
+                  style={{
+                    color: favoriteProducts.includes(product.id)
+                      ? "red"
+                      : "inherit",
+                  }}
+                />
               </button>
             </div>
           </div>

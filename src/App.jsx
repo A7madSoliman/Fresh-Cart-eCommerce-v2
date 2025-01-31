@@ -20,7 +20,6 @@ import WishList from "./Pages/WishList/WishList";
 import WishlistProvider from "./Components/Context/Wishlist.context";
 import AllProducts from "./Pages/AllProducts/AllProducts";
 import { QueryClient, QueryClientProvider } from "react-query";
-import LoadingProvider from "./Components/Context/Loading.context";
 
 function App() {
   const routes = createHashRouter([
@@ -64,9 +63,7 @@ function App() {
         <UserProvider>
           <CartProvider>
             <WishlistProvider>
-              <LoadingProvider>
-                <RouterProvider router={routes} />
-              </LoadingProvider>
+              <RouterProvider router={routes} />
             </WishlistProvider>
           </CartProvider>
           <Toaster position="top-right" />

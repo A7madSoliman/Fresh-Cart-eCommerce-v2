@@ -9,21 +9,19 @@ import AddShoppingCartOutlinedIcon from "@mui/icons-material/AddShoppingCartOutl
 import CloseIcon from "@mui/icons-material/Close";
 import { Helmet } from "react-helmet";
 import Loading from "../../Components/Loading/Loading";
-import { loadingContext } from "../../Components/Context/Loading.context";
 
 export default function WishList() {
   const { wishInfo, removeProductFromWishlist } = useContext(wishContext);
   const { addProductToCart, isCartLoading } = useContext(cartContext);
-  const { isLoading } = useContext(loadingContext);
-  // const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // useEffect(() => {
-  //   if (wishInfo?.data) {
-  //     setIsLoading(false);
-  //   } else {
-  //     setIsLoading(true);
-  //   }
-  // }, [wishInfo]);
+  useEffect(() => {
+    if (wishInfo?.data) {
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
+  }, [wishInfo]);
 
   if (isLoading) {
     return <Loading />;

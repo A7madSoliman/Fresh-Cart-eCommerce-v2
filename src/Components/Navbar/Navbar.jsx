@@ -137,7 +137,7 @@ export default function Navbar() {
               >
                 <FavoriteOutlinedIcon
                   className={
-                    isWishListContainItem ? "text-red-700" : "text-white"
+                    isWishListContainItem ? "text-red-500" : "text-white"
                   }
                 />
               </Link>
